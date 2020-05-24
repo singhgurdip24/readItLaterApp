@@ -14,13 +14,13 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.inMemoryAuthentication()
-                .withUser("myuser")
-                .password("blah")
-                .roles("User")
-                .and()
-                .withUser("admin")
-                .password("admin")
-                .roles("Admin")
+          .withUser("myuser")
+          .password("blah")
+          .roles("User")
+          .and()
+          .withUser("admin")
+          .password("admin")
+          .roles("Admin")
         ;
     }
 
