@@ -1,6 +1,9 @@
 package com.codesingh.readitlaterapp.security;
 
+import com.codesingh.readitlaterapp.service.CustomerUserDetailService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,17 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
+
+    CustomerUserDetailService customerUserDetailService;
+
     @Override
     protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.inMemoryAuthentication()
-          .withUser("myuser")
-          .password("blah")
-          .roles("User")
-          .and()
-          .withUser("admin")
-          .password("admin")
-          .roles("Admin")
-        ;
+        authenticationManagerBuilder.userDetailsService(customerUserDetailService).passwordEncoder(getPasswordEncoder());
     }
 
     @Override
@@ -33,6 +31,12 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
           .and().formLogin();
     }
 
+
+    @Bean(BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
     @Bean
     public PasswordEncoder getPasswordEncoder(){
