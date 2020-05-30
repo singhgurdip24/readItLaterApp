@@ -5,13 +5,21 @@ import com.codesingh.readitlaterapp.model.Role;
 import com.codesingh.readitlaterapp.model.RoleName;
 import com.codesingh.readitlaterapp.model.User;
 import com.codesingh.readitlaterapp.payload.ApiResponse;
+import com.codesingh.readitlaterapp.payload.JwtAuthenticationResponse;
+import com.codesingh.readitlaterapp.payload.LoginRequest;
 import com.codesingh.readitlaterapp.payload.SignUpRequest;
 import com.codesingh.readitlaterapp.repository.RoleRepository;
 import com.codesingh.readitlaterapp.repository.UserRepository;
+import com.codesingh.readitlaterapp.security.JwtTokenProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +46,11 @@ public class AuthController {
 
   @Autowired
   PasswordEncoder passwordEncoder;
+
+  @Autowired
+  JwtTokenProvider tokenProvider;
+
+  private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest){
@@ -66,5 +79,24 @@ public class AuthController {
       .buildAndExpand(result.getUsername()).toUri();
 
     return ResponseEntity.created(location).body(new ApiResponse(true, "User Registered Successfully"));
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest){
+
+
+
+    Authentication authentication = authenticationManager.authenticate(
+      new UsernamePasswordAuthenticationToken(
+        loginRequest.getUserOrEmail(),loginRequest.getPassword()
+      )
+    );
+
+
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    String jwt = tokenProvider.generateToken(authentication);
+
+    return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
   }
 }
