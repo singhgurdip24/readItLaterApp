@@ -11,8 +11,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -26,6 +28,9 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
     @Autowired
     CustomerUserDetailService customerUserDetailService;
 
+    @Autowired
+    JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Override
     protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(customerUserDetailService).passwordEncoder(getPasswordEncoder());
@@ -35,8 +40,12 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().exceptionHandling().and()
           .authorizeRequests()
-          .antMatchers("/api/auth/**")
-          .permitAll();
+          .antMatchers("/api/auth/**").permitAll()
+          .anyRequest().authenticated()
+          .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        ;
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
 
@@ -50,4 +59,6 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
     public PasswordEncoder getPasswordEncoder(){
         return NoOpPasswordEncoder.getInstance();
     }
+
+
 }

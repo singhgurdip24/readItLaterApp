@@ -23,8 +23,16 @@ public class CustomerUserDetailService implements UserDetailsService {
 
     User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
       .orElseThrow(() ->
-        new UsernameNotFoundException("User not found with username or email : " + usernameOrEmail)
-      );
+        new UsernameNotFoundException("User not found with username or email : " + usernameOrEmail));
+
+    return UserPrincipal.create(user);
+  }
+
+  @Transactional
+  public UserDetails loadByUserById(Long userId) {
+
+    User user = userRepository.findById(userId)
+      .orElseThrow(()-> new UsernameNotFoundException("User not found with id : " + userId));
 
     return UserPrincipal.create(user);
   }
