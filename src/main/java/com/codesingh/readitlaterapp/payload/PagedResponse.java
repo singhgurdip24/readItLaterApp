@@ -1,6 +1,8 @@
 package com.codesingh.readitlaterapp.payload;
 
-public class PagedResponse {
+import java.util.List;
+
+public class PagedResponse<T> {
 
   private List<T> content;
 
@@ -8,7 +10,7 @@ public class PagedResponse {
 
   private int size;
 
-  private int totalElements;
+  private long totalElements;
 
   private int totalPages;
 
@@ -17,7 +19,7 @@ public class PagedResponse {
   public PagedResponse() {
   }
 
-  public PagedResponse(List<T> content, int page, int size, int totalElements, int totalPages, boolean last) {
+  public PagedResponse(List<T> content, int page, int size, long totalElements, int totalPages, boolean last) {
     this.content = content;
     this.page = page;
     this.size = size;
@@ -50,11 +52,11 @@ public class PagedResponse {
     this.size = size;
   }
 
-  public int getTotalElements() {
+  public long getTotalElements() {
     return totalElements;
   }
 
-  public void setTotalElements(int totalElements) {
+  public void setTotalElements(long totalElements) {
     this.totalElements = totalElements;
   }
 

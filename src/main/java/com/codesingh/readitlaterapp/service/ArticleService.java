@@ -26,7 +26,7 @@ public class ArticleService {
   public PagedResponse<ArticleResponse> getAllArticles(int page, int size){
     validatePageNumberAndSize(page, size);
 
-    Pageable pageable = PageRequest.of(page,size, Sort.Direction.DESC);
+    Pageable pageable = PageRequest.of(page,size, Sort.Direction.DESC,"id");
     Page<Article> articles = articleRepository.findAll(pageable);
 
     if(articles.getNumberOfElements() == 0) {
