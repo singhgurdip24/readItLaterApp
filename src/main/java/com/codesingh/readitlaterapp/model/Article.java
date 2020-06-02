@@ -25,6 +25,9 @@ public class Article {
 
   public String type;
 
+  public Article() {
+  }
+
   public Article(String url, String description, String author, String type) {
     this.url = url;
     this.description = description;
