@@ -6,14 +6,16 @@ import com.codesingh.readitlaterapp.payload.ArticleResponse;
 import com.codesingh.readitlaterapp.payload.PagedResponse;
 import com.codesingh.readitlaterapp.repository.ArticleRepository;
 import com.codesingh.readitlaterapp.util.AppConstants;
+import com.codesingh.readitlaterapp.util.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public class ArticleService {
@@ -32,7 +34,12 @@ public class ArticleService {
         articles.getSize(), articles.getTotalElements(), articles.getTotalPages(), articles.isLast());
     }
 
-    
+    List<ArticleResponse> articleResponses = articles.map(
+      article -> {return ModelMapper.mapArticleToArticleResponse(article);}
+    ).getContent();
+
+    return new PagedResponse<>(articleResponses, articles.getNumber(),
+      articles.getSize(),articles.getNumberOfElements(),articles.getTotalPages(),articles.isLast());
   }
 
   private void validatePageNumberAndSize(int page, int size) {
