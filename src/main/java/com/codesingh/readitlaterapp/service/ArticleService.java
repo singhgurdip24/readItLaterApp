@@ -7,6 +7,8 @@ import com.codesingh.readitlaterapp.payload.PagedResponse;
 import com.codesingh.readitlaterapp.repository.ArticleRepository;
 import com.codesingh.readitlaterapp.util.AppConstants;
 import com.codesingh.readitlaterapp.util.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,23 +25,35 @@ public class ArticleService {
   @Autowired
   private ArticleRepository articleRepository;
 
-  public PagedResponse<ArticleResponse> getAllArticles(int page, int size){
+  private static final Logger logger = LoggerFactory.getLogger(ArticleService.class);
+
+//  public PagedResponse<ArticleResponse> getAllArticles(int page, int size){
+//    validatePageNumberAndSize(page, size);
+//
+//    Pageable pageable = PageRequest.of(page,size, Sort.Direction.DESC,"id");
+//    Page<Article> articles = articleRepository.findAll(pageable);
+//
+//    if(articles.getNumberOfElements() == 0) {
+//      return new PagedResponse<>(Collections.emptyList(), articles.getNumber(),
+//        articles.getSize(), articles.getTotalElements(), articles.getTotalPages(), articles.isLast());
+//    }
+//
+//    logger.info("Gurdip", Integer.toString(articles.getContent().size()));
+//    List<ArticleResponse> articleResponses = articles.map(
+//      article -> {return ModelMapper.mapArticleToArticleResponse(article);}
+//    ).getContent();
+//
+//    return new PagedResponse<>(articleResponses, articles.getNumber(),
+//      articles.getSize(),articles.getNumberOfElements(),articles.getTotalPages(),articles.isLast());
+//  }
+
+  public ArticleResponse getAllArticles(int page, int size){
     validatePageNumberAndSize(page, size);
 
     Pageable pageable = PageRequest.of(page,size, Sort.Direction.DESC,"id");
-    Page<Article> articles = articleRepository.findAll(pageable);
+    List<Article> articleList = articleRepository.findAll();
 
-    if(articles.getNumberOfElements() == 0) {
-      return new PagedResponse<>(Collections.emptyList(), articles.getNumber(),
-        articles.getSize(), articles.getTotalElements(), articles.getTotalPages(), articles.isLast());
-    }
-
-    List<ArticleResponse> articleResponses = articles.map(
-      article -> {return ModelMapper.mapArticleToArticleResponse(article);}
-    ).getContent();
-
-    return new PagedResponse<>(articleResponses, articles.getNumber(),
-      articles.getSize(),articles.getNumberOfElements(),articles.getTotalPages(),articles.isLast());
+    return ModelMapper.mapArticleToArticleResponse(articleList.get(1));
   }
 
   private void validatePageNumberAndSize(int page, int size) {
