@@ -13,6 +13,7 @@ public class ModelMapper {
     articleResponse.setDescription(article.getDescription());
     articleResponse.setAuthor(article.getAuthor());
     articleResponse.setType(article.getType());
+    articleResponse.setCreatedAt(article.getCreatedAt());
 
     return articleResponse;
   }

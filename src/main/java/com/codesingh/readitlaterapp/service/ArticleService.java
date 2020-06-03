@@ -25,36 +25,25 @@ public class ArticleService {
   @Autowired
   private ArticleRepository articleRepository;
 
-  private static final Logger logger = LoggerFactory.getLogger(ArticleService.class);
-
-//  public PagedResponse<ArticleResponse> getAllArticles(int page, int size){
-//    validatePageNumberAndSize(page, size);
-//
-//    Pageable pageable = PageRequest.of(page,size, Sort.Direction.DESC,"id");
-//    Page<Article> articles = articleRepository.findAll(pageable);
-//
-//    if(articles.getNumberOfElements() == 0) {
-//      return new PagedResponse<>(Collections.emptyList(), articles.getNumber(),
-//        articles.getSize(), articles.getTotalElements(), articles.getTotalPages(), articles.isLast());
-//    }
-//
-//    logger.info("Gurdip", Integer.toString(articles.getContent().size()));
-//    List<ArticleResponse> articleResponses = articles.map(
-//      article -> {return ModelMapper.mapArticleToArticleResponse(article);}
-//    ).getContent();
-//
-//    return new PagedResponse<>(articleResponses, articles.getNumber(),
-//      articles.getSize(),articles.getNumberOfElements(),articles.getTotalPages(),articles.isLast());
-//  }
-
-  public ArticleResponse getAllArticles(int page, int size){
+  public PagedResponse<ArticleResponse> getAllArticles(int page, int size){
     validatePageNumberAndSize(page, size);
 
-    Pageable pageable = PageRequest.of(page,size, Sort.Direction.DESC,"id");
-    List<Article> articleList = articleRepository.findAll();
+    Pageable pageable = PageRequest.of(page,size,Sort.by("id"));
+    Page<Article> articles = articleRepository.findAll(pageable);
 
-    return ModelMapper.mapArticleToArticleResponse(articleList.get(1));
+    if(articles.getNumberOfElements() == 0) {
+      return new PagedResponse<>(Collections.emptyList(), articles.getNumber(),
+        articles.getSize(), articles.getTotalElements(), articles.getTotalPages(), articles.isLast());
+    }
+
+    List<ArticleResponse> articleResponses = articles.map(
+      article -> {return ModelMapper.mapArticleToArticleResponse(article);}
+    ).getContent();
+
+    return new PagedResponse<>(articleResponses, articles.getNumber(),
+      articles.getSize(),articles.getNumberOfElements(),articles.getTotalPages(),articles.isLast());
   }
+
 
   private void validatePageNumberAndSize(int page, int size) {
     if(page < 0) {

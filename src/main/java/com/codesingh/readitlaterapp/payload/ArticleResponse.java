@@ -2,6 +2,8 @@ package com.codesingh.readitlaterapp.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.time.Instant;
+
 public class ArticleResponse {
 
   private Long id;
@@ -10,11 +12,21 @@ public class ArticleResponse {
 
   private String description;
 
+  private Instant createdAt;
+
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private String author;
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private String type;
+
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
+  }
 
   public Long getId() {
     return id;

@@ -1,8 +1,11 @@
 package com.codesingh.readitlaterapp.model;
 
+import com.codesingh.readitlaterapp.model.audit.DateAudit;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.Instant;
 
 @Entity
 @Table(name = "articles", uniqueConstraints = {
@@ -10,7 +13,7 @@ import javax.validation.constraints.Size;
     "url"
   })
 })
-public class Article {
+public class Article extends DateAudit {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +27,7 @@ public class Article {
   public String author;
 
   public String type;
+
 
   public Article() {
   }
