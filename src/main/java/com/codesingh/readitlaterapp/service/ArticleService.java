@@ -2,9 +2,12 @@ package com.codesingh.readitlaterapp.service;
 
 import com.codesingh.readitlaterapp.exception.BadRequestException;
 import com.codesingh.readitlaterapp.model.Article;
+import com.codesingh.readitlaterapp.model.UserArticleMap;
 import com.codesingh.readitlaterapp.payload.ArticleResponse;
 import com.codesingh.readitlaterapp.payload.PagedResponse;
 import com.codesingh.readitlaterapp.repository.ArticleRepository;
+import com.codesingh.readitlaterapp.repository.UserArticleMapRepository;
+import com.codesingh.readitlaterapp.security.UserPrincipal;
 import com.codesingh.readitlaterapp.util.AppConstants;
 import com.codesingh.readitlaterapp.util.ModelMapper;
 import org.slf4j.Logger;
@@ -25,7 +28,11 @@ public class ArticleService {
   @Autowired
   private ArticleRepository articleRepository;
 
+  @Autowired
+  private UserArticleMapRepository userArticleMapRepository;
+
   public PagedResponse<ArticleResponse> getAllArticles(int page, int size){
+
     validatePageNumberAndSize(page, size);
 
     Pageable pageable = PageRequest.of(page,size,Sort.by("id"));
@@ -52,5 +59,15 @@ public class ArticleService {
     if(size > AppConstants.MAX_PAGE_SIZE) {
       throw new BadRequestException("Page size must not be greater than " + AppConstants.MAX_PAGE_SIZE);
     }
+  }
+
+  public Integer getAllUserArticles(String username, UserPrincipal currentUser, int page, int size) {
+    validatePageNumberAndSize(page, size);
+
+    //Pageable pageable = PageRequest.of(page,size,Sort.by("id"));
+    List<UserArticleMap> articleMaps =  userArticleMapRepository.findAll();
+
+    return articleMaps.size();
+
   }
 }
