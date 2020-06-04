@@ -44,7 +44,6 @@ public class ArticleService {
       articles.getSize(),articles.getNumberOfElements(),articles.getTotalPages(),articles.isLast());
   }
 
-
   private void validatePageNumberAndSize(int page, int size) {
     if(page < 0) {
       throw new BadRequestException("Page number cannot be less than zero.");

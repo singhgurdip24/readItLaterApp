@@ -59,5 +59,4 @@ public class JwtTokenProvider {
     return Long.parseLong(claims.getSubject());
   }
 
-
 }

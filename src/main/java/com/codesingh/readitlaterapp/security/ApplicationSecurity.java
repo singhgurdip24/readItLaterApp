@@ -43,12 +43,10 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
           .antMatchers("/api/auth/**").permitAll()
           .anyRequest().authenticated()
           .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
         ;
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
-
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
     @Override
@@ -60,6 +58,5 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
     public PasswordEncoder getPasswordEncoder(){
         return NoOpPasswordEncoder.getInstance();
     }
-
 
 }
