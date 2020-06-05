@@ -1,12 +1,15 @@
 package com.codesingh.readitlaterapp.service;
 
 import com.codesingh.readitlaterapp.exception.BadRequestException;
+import com.codesingh.readitlaterapp.exception.ResourceNotFoundException;
 import com.codesingh.readitlaterapp.model.Article;
+import com.codesingh.readitlaterapp.model.User;
 import com.codesingh.readitlaterapp.model.UserArticleMap;
 import com.codesingh.readitlaterapp.payload.ArticleResponse;
 import com.codesingh.readitlaterapp.payload.PagedResponse;
 import com.codesingh.readitlaterapp.repository.ArticleRepository;
 import com.codesingh.readitlaterapp.repository.UserArticleMapRepository;
+import com.codesingh.readitlaterapp.repository.UserRepository;
 import com.codesingh.readitlaterapp.security.UserPrincipal;
 import com.codesingh.readitlaterapp.util.AppConstants;
 import com.codesingh.readitlaterapp.util.ModelMapper;
@@ -30,6 +33,9 @@ public class ArticleService {
 
   @Autowired
   private UserArticleMapRepository userArticleMapRepository;
+
+  @Autowired
+  private UserRepository userRepository;
 
   public PagedResponse<ArticleResponse> getAllArticles(int page, int size){
 
@@ -64,8 +70,13 @@ public class ArticleService {
   public Integer getAllUserArticles(String username, UserPrincipal currentUser, int page, int size) {
     validatePageNumberAndSize(page, size);
 
+    User user = userRepository.findByUsername(username)
+      .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
     //Pageable pageable = PageRequest.of(page,size,Sort.by("id"));
-    List<UserArticleMap> articleMaps =  userArticleMapRepository.findAll();
+    //List<UserArticleMap> articleMaps =  userArticleMapRepository.findAll();
+    List<UserArticleMap> articleMaps =  userArticleMapRepository.findByUserId(user.getId());
+    
 
     return articleMaps.size();
 
