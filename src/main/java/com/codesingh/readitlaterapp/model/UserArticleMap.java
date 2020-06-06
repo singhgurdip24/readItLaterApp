@@ -92,7 +92,7 @@ public class UserArticleMap {
     return articleRead;
   }
 
-  public void setRead(Boolean read) {
+  public void setRead(Boolean articleRead) {
     this.articleRead = articleRead;
   }
 

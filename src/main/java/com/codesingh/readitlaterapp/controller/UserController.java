@@ -1,14 +1,21 @@
 package com.codesingh.readitlaterapp.controller;
 
-import com.codesingh.readitlaterapp.payload.ArticleDetailResponse;
-import com.codesingh.readitlaterapp.payload.ArticleResponse;
-import com.codesingh.readitlaterapp.payload.PagedResponse;
+import com.codesingh.readitlaterapp.model.Article;
+import com.codesingh.readitlaterapp.payload.*;
 import com.codesingh.readitlaterapp.security.CurrentUser;
 import com.codesingh.readitlaterapp.security.UserPrincipal;
 import com.codesingh.readitlaterapp.service.ArticleService;
 import com.codesingh.readitlaterapp.util.AppConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import javax.validation.Valid;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/")
@@ -16,6 +23,8 @@ public class UserController {
 
   @Autowired
   ArticleService articleService;
+
+  private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
   @GetMapping("/articles")
   public PagedResponse<ArticleResponse> getAllArticles(
@@ -35,14 +44,21 @@ public class UserController {
     return articleService.getAllUserArticles(username,currentUser,page,size);
   }
 
-//  @GetMapping("/users/{username}/articles")
-//  public Integer getAllUserArticles(
-//    @PathVariable(value = "username") String username,
-//    @CurrentUser UserPrincipal currentUser,
-//    @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
-//    @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size
-//  ){
-//    return articleService.getAllUserArticles(username,currentUser,page,size);
-//  }
+  @PostMapping("/articles")
+  @PreAuthorize("hasRole('USER')")
+  public ResponseEntity<?> postUserArticle(
+    @Valid @RequestBody SaveArticleRequest saveArticleRequest,
+    @CurrentUser UserPrincipal currentUser
+  ) {
+    logger.info("here");
+    Article article = articleService.saveArticleByUser(saveArticleRequest, currentUser);
+
+    URI location = ServletUriComponentsBuilder
+      .fromCurrentRequest().path("articles/{articleId}")
+      .buildAndExpand(article.getId()).toUri();
+
+    return ResponseEntity.created(location)
+      .body(new ApiResponse(true, "Article Saved Successfully"));
+  }
 
 }

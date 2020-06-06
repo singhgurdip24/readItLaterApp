@@ -8,6 +8,7 @@ import com.codesingh.readitlaterapp.model.UserArticleMap;
 import com.codesingh.readitlaterapp.payload.ArticleDetailResponse;
 import com.codesingh.readitlaterapp.payload.ArticleResponse;
 import com.codesingh.readitlaterapp.payload.PagedResponse;
+import com.codesingh.readitlaterapp.payload.SaveArticleRequest;
 import com.codesingh.readitlaterapp.repository.ArticleRepository;
 import com.codesingh.readitlaterapp.repository.UserArticleMapRepository;
 import com.codesingh.readitlaterapp.repository.UserRepository;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
@@ -88,5 +90,34 @@ public class ArticleService {
     return new PagedResponse<>(articleResponses, articleMaps.getNumber(),
       articleMaps.getSize(),articleMaps.getNumberOfElements(),articleMaps.getTotalPages(),articleMaps.isLast());
 
+  }
+
+  public Article saveArticleByUser(SaveArticleRequest saveArticleRequest, UserPrincipal currentUser) {
+    Article article = new Article();
+    article.setUrl(saveArticleRequest.getArticleUrl());
+    article.setAuthor(saveArticleRequest.getAuthor());
+    article.setDescription(saveArticleRequest.getDescription());
+    article.setType(saveArticleRequest.getType());
+    Instant now = Instant.now();
+    article.setCreatedAt(now);
+    article.setUpdatedAt(now);
+
+
+    articleRepository.save(article);
+
+    if(currentUser != null) {
+      User user = userRepository.findByUsername(currentUser.getUsername())
+        .orElseThrow(() -> new ResourceNotFoundException("User", "username", currentUser.getUsername()));
+
+      UserArticleMap userArticleMap = new UserArticleMap();
+      userArticleMap.setArticle(article);
+      userArticleMap.setCreatedDate(now);
+      userArticleMap.setRead(saveArticleRequest.getMarkAsRead());
+      userArticleMap.setFavourite(saveArticleRequest.getMarkAsFavourite());
+      userArticleMap.setUser(user);
+
+      userArticleMapRepository.save(userArticleMap);
+    }
+    return article;
   }
 }
