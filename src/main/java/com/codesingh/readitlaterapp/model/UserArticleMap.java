@@ -12,7 +12,8 @@ public class UserArticleMap {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long map_id;
+  @JoinColumn(name = "map_id")
+  private Long mapId;
 
   @ManyToOne
   @JoinColumn(name = "user_id")
@@ -37,8 +38,8 @@ public class UserArticleMap {
   public UserArticleMap() {
   }
 
-  public UserArticleMap(Long map_id, User user, Article article, Instant createdDate, Instant lastModifiedDate, Boolean articleRead, Boolean favourite) {
-    this.map_id = map_id;
+  public UserArticleMap(Long mapId, User user, Article article, Instant createdDate, Instant lastModifiedDate, Boolean articleRead, Boolean favourite) {
+    this.mapId = mapId;
     this.user = user;
     this.article = article;
     this.createdDate = createdDate;
@@ -48,11 +49,11 @@ public class UserArticleMap {
   }
 
   public Long getMap_id() {
-    return map_id;
+    return mapId;
   }
 
   public void setMap_id(Long map_id) {
-    this.map_id = map_id;
+    this.mapId = map_id;
   }
 
   public User getUser() {

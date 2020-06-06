@@ -5,6 +5,7 @@ import com.codesingh.readitlaterapp.exception.ResourceNotFoundException;
 import com.codesingh.readitlaterapp.model.Article;
 import com.codesingh.readitlaterapp.model.User;
 import com.codesingh.readitlaterapp.model.UserArticleMap;
+import com.codesingh.readitlaterapp.payload.ArticleDetailResponse;
 import com.codesingh.readitlaterapp.payload.ArticleResponse;
 import com.codesingh.readitlaterapp.payload.PagedResponse;
 import com.codesingh.readitlaterapp.repository.ArticleRepository;
@@ -67,18 +68,25 @@ public class ArticleService {
     }
   }
 
-  public Integer getAllUserArticles(String username, UserPrincipal currentUser, int page, int size) {
+  public PagedResponse<ArticleDetailResponse> getAllUserArticles(String username, UserPrincipal currentUser, int page, int size) {
     validatePageNumberAndSize(page, size);
 
     User user = userRepository.findByUsername(username)
       .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
-    //Pageable pageable = PageRequest.of(page,size,Sort.by("id"));
-    //List<UserArticleMap> articleMaps =  userArticleMapRepository.findAll();
-    List<UserArticleMap> articleMaps =  userArticleMapRepository.findByUserId(user.getId());
-    
+    Pageable pageable = PageRequest.of(page,size,Sort.by("mapId"));
+    Page<UserArticleMap> articleMaps =  userArticleMapRepository.findByUserId(user.getId(),pageable);
 
-    return articleMaps.size();
+    if(articleMaps.getNumberOfElements() == 0) {
+      return new PagedResponse<>(Collections.emptyList(), articleMaps.getNumber(),
+        articleMaps.getSize(), articleMaps.getTotalElements(), articleMaps.getTotalPages(), articleMaps.isLast());
+    }
+
+    List<ArticleDetailResponse> articleResponses = articleMaps.map(
+      ModelMapper::mapArticleMapToArticleDetailResponse).getContent();
+
+    return new PagedResponse<>(articleResponses, articleMaps.getNumber(),
+      articleMaps.getSize(),articleMaps.getNumberOfElements(),articleMaps.getTotalPages(),articleMaps.isLast());
 
   }
 }
