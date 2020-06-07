@@ -33,6 +33,7 @@ public class ModelMapper {
     articleDetailResponse.setArticleRead(userArticleMap.getFavourite());
     articleDetailResponse.setSavedAt(userArticleMap.getCreatedDate());
     articleDetailResponse.setLastModifiedAt(userArticleMap.getLastModifiedDate());
+    articleDetailResponse.setDeletedAt(userArticleMap.getDeletedAt());
 
     return articleDetailResponse;
   }

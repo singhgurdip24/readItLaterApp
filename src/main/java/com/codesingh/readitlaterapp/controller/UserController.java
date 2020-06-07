@@ -23,7 +23,7 @@ import java.net.URI;
 public class UserController {
 
   @Autowired
-  ArticleService articleService;
+  private ArticleService articleService;
 
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -33,16 +33,6 @@ public class UserController {
     @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size
   ){
     return articleService.getAllArticles(page,size);
-  }
-
-  @GetMapping("/users/{username}/articles")
-  public PagedResponse<ArticleDetailResponse> getAllUserArticles(
-    @PathVariable(value = "username") String username,
-    @CurrentUser UserPrincipal currentUser,
-    @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
-    @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size
-  ){
-    return articleService.getAllUserArticles(username,currentUser,page,size);
   }
 
   @PostMapping("/articles")
@@ -62,6 +52,24 @@ public class UserController {
       .body(new ApiResponse(true, "Article Saved Successfully"));
   }
 
+  @GetMapping("/users/{username}/articles")
+  public PagedResponse<ArticleDetailResponse> getAllUserArticles(
+    @PathVariable(value = "username") String username,
+    @CurrentUser UserPrincipal currentUser,
+    @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+    @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size
+  ){
+    return articleService.getAllUserArticles(username,currentUser,page,size);
+  }
+
+  @GetMapping("/users/{username}/articles/{id}")
+  public ArticleDetailResponse getUserArticleById(
+    @PathVariable(value = "id") Long articleId,
+    @PathVariable(value = "username") String username
+  ) {
+    return articleService.getUserArticleDetail(articleId, username);
+  }
+
   @DeleteMapping(value = "/users/{username}/articles/{id}")
   public ResponseEntity<Long> deleteArticle(
     @PathVariable(value = "id") Long id,
@@ -69,7 +77,6 @@ public class UserController {
   ) {
 
     Boolean isRemoved = articleService.deleteArticleMap(id,username);
-
     if (!isRemoved) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

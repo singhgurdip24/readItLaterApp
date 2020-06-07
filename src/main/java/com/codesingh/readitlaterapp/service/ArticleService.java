@@ -1,5 +1,6 @@
 package com.codesingh.readitlaterapp.service;
 
+import com.codesingh.readitlaterapp.controller.UserController;
 import com.codesingh.readitlaterapp.exception.BadRequestException;
 import com.codesingh.readitlaterapp.exception.ResourceNotFoundException;
 import com.codesingh.readitlaterapp.model.Article;
@@ -25,12 +26,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ArticleService {
+
+  private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
   @Autowired
   private ArticleRepository articleRepository;
@@ -72,6 +76,9 @@ public class ArticleService {
   }
 
   public PagedResponse<ArticleDetailResponse> getAllUserArticles(String username, UserPrincipal currentUser, int page, int size) {
+
+    List<ArticleDetailResponse> articleResponsesFilter = new ArrayList<>();
+
     validatePageNumberAndSize(page, size);
 
     User user = userRepository.findByUsername(username)
@@ -85,10 +92,17 @@ public class ArticleService {
         articleMaps.getSize(), articleMaps.getTotalElements(), articleMaps.getTotalPages(), articleMaps.isLast());
     }
 
-    List<ArticleDetailResponse> articleResponses = articleMaps.map(
-      ModelMapper::mapArticleMapToArticleDetailResponse).getContent();
+    List<ArticleDetailResponse> articleResponses = articleMaps
+      .map(ModelMapper::mapArticleMapToArticleDetailResponse)
+      .getContent();
 
-    return new PagedResponse<>(articleResponses, articleMaps.getNumber(),
+    for (ArticleDetailResponse articleResponse: articleResponses) {
+      if (articleResponse.getDeletedAt() == null) {
+        articleResponsesFilter.add(articleResponse);
+      }
+    }
+
+    return new PagedResponse<>(articleResponsesFilter, articleMaps.getNumber(),
       articleMaps.getSize(),articleMaps.getNumberOfElements(),articleMaps.getTotalPages(),articleMaps.isLast());
 
   }
@@ -137,5 +151,17 @@ public class ArticleService {
     map.setDeletedAt(Instant.now());
     userArticleMapRepository.save(map);
     return Boolean.TRUE;
+  }
+
+  public ArticleDetailResponse getUserArticleDetail(Long articleId, String username) {
+
+    User user = userRepository.findByUsername(username)
+      .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+    UserArticleMap userArticleMap = userArticleMapRepository.findByArticleIdAndUserId(articleId,user.getId()).orElseThrow(
+      () -> new ResourceNotFoundException("Article", "Not Found" , "")
+    );
+
+    return ModelMapper.mapArticleMapToArticleDetailResponse(userArticleMap);
   }
 }

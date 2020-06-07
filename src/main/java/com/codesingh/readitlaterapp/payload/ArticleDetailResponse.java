@@ -12,6 +12,16 @@ public class ArticleDetailResponse extends ArticleResponse {
 
   private Instant lastModifiedAt;
 
+  private Instant deletedAt;
+
+  public Instant getDeletedAt() {
+    return deletedAt;
+  }
+
+  public void setDeletedAt(Instant deletedAt) {
+    this.deletedAt = deletedAt;
+  }
+
   public Instant getSavedAt() {
     return savedAt;
   }
