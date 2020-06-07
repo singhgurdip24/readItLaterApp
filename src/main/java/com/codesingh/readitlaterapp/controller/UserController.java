@@ -9,6 +9,7 @@ import com.codesingh.readitlaterapp.util.AppConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +60,21 @@ public class UserController {
 
     return ResponseEntity.created(location)
       .body(new ApiResponse(true, "Article Saved Successfully"));
+  }
+
+  @DeleteMapping(value = "/users/{username}/articles/{id}")
+  public ResponseEntity<Long> deleteArticle(
+    @PathVariable(value = "id") Long id,
+    @PathVariable(value = "username") String username
+  ) {
+
+    Boolean isRemoved = articleService.deleteArticleMap(id,username);
+
+    if (!isRemoved) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    return new ResponseEntity<>(id, HttpStatus.OK);
   }
 
 }

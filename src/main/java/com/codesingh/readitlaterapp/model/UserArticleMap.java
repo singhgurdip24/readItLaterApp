@@ -27,9 +27,20 @@ public class UserArticleMap {
   @Column(name = "created_date")
   private Instant createdDate;
 
+  public Instant getDeletedAt() {
+    return deletedAt;
+  }
+
+  public void setDeletedAt(Instant deletedAt) {
+    this.deletedAt = deletedAt;
+  }
+
   @LastModifiedDate
   @Column(name = "last_modified_date")
   private Instant lastModifiedDate;
+
+  @Column(name = "deleted_at")
+  private Instant deletedAt;
 
   private Boolean articleRead;
 

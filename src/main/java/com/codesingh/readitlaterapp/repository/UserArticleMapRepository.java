@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,5 +13,9 @@ public interface UserArticleMapRepository extends JpaRepository<UserArticleMap,L
   Optional<UserArticleMap> findById(Long id);
 
   Page<UserArticleMap> findByUserId(Long id, Pageable pageable);
+
+  Optional<UserArticleMap> findByArticleId(Long id);
+
+  Optional<UserArticleMap> findByArticleIdAndUserId(Long articleId, Long userId);
 
 }

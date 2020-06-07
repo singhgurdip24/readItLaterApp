@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ArticleService {
@@ -119,5 +120,22 @@ public class ArticleService {
       userArticleMapRepository.save(userArticleMap);
     }
     return article;
+  }
+
+  public Boolean deleteArticleMap(Long id, String username) {
+
+    User user = userRepository.findByUsername(username)
+      .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+    Optional<UserArticleMap> userArticleMap = userArticleMapRepository.findByArticleIdAndUserId(id,user.getId());
+
+    if(!userArticleMap.isPresent()){
+      return Boolean.FALSE;
+    }
+
+    UserArticleMap map = userArticleMap.get();
+    map.setDeletedAt(Instant.now());
+    userArticleMapRepository.save(map);
+    return Boolean.TRUE;
   }
 }
