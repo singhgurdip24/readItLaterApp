@@ -90,7 +90,7 @@ public class AuthController {
       )
     );
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
+//  SecurityContextHolder.getContext().setAuthentication(authentication);
 
     String jwt = tokenProvider.generateToken(authentication);
 

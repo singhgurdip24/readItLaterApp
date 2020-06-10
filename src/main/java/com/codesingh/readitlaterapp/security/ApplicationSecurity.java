@@ -38,12 +38,32 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().exceptionHandling().and()
+        http
+          .cors()
+          .and()
+          .csrf()
+          .disable()
+          .exceptionHandling()
+          .and()
+          .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+          .and()
           .authorizeRequests()
-          .antMatchers("/api/auth/**").permitAll()
-          .anyRequest().authenticated()
-          .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        ;
+          .antMatchers("/",
+            "/favicon.ico",
+            "/**/*.png",
+            "/**/*.gif",
+            "/**/*.svg",
+            "/**/*.jpg",
+            "/**/*.html",
+            "/**/*.css",
+            "/**/*.js")
+          .permitAll()
+          .antMatchers("/api/auth/**")
+          .permitAll()
+          .antMatchers("/api/user/checkUsernameAvailability", "/api/user/checkEmailAvailability")
+          .permitAll()
+          .anyRequest()
+          .authenticated();
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
