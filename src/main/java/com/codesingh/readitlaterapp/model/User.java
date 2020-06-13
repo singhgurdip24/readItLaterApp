@@ -1,5 +1,6 @@
 package com.codesingh.readitlaterapp.model;
 
+import com.codesingh.readitlaterapp.model.audit.DateAudit;
 import org.hibernate.annotations.NaturalId;
 import javax.persistence.*;
 import javax.validation.constraints.Email;

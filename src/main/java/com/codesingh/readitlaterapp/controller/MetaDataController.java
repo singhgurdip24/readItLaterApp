@@ -44,6 +44,8 @@ public class MetaDataController {
       }
 
     System.out.println(favImage);
+
+
 //    for (Element link : links) {
 //      System.out.println(link.toString());
 //    }

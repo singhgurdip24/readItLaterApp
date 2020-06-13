@@ -1,7 +1,10 @@
 package com.codesingh.readitlaterapp.controller;
 
+import com.codesingh.readitlaterapp.exception.ResourceNotFoundException;
 import com.codesingh.readitlaterapp.model.Article;
+import com.codesingh.readitlaterapp.model.User;
 import com.codesingh.readitlaterapp.payload.*;
+import com.codesingh.readitlaterapp.repository.UserRepository;
 import com.codesingh.readitlaterapp.security.CurrentUser;
 import com.codesingh.readitlaterapp.security.UserPrincipal;
 import com.codesingh.readitlaterapp.service.ArticleService;
@@ -24,6 +27,9 @@ public class UserController {
 
   @Autowired
   private ArticleService articleService;
+
+  @Autowired
+  private UserRepository userRepository;
 
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -82,6 +88,24 @@ public class UserController {
     }
 
     return new ResponseEntity<>(id, HttpStatus.OK);
+  }
+
+  @GetMapping("/user/me")
+  @PreAuthorize("hasRole('USER')")
+  public UserSummary getCurrentUser(@CurrentUser UserPrincipal currentUser) {
+    UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getUsername(), currentUser.getName());
+    return userSummary;
+  }
+
+  @GetMapping("/users/{username}")
+  public UserProfile getUserProfile(@PathVariable(value = "username") String username) {
+    User user = userRepository.findByUsername(username)
+      .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+
+    UserProfile userProfile = new UserProfile(user.getId(), user.getUsername(), user.getName());
+
+    return userProfile;
   }
 
 
