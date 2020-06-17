@@ -59,7 +59,7 @@ public class UserController {
   }
 
   @GetMapping("/users/{username}/articles")
-  public PagedResponse<ArticleDetailResponse> getAllUserArticles(
+  public PagedResponse<ArticleMetaResponse> getAllUserArticles(
     @PathVariable(value = "username") String username,
     @CurrentUser UserPrincipal currentUser,
     @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,

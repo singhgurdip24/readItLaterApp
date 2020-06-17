@@ -6,10 +6,7 @@ import com.codesingh.readitlaterapp.exception.ResourceNotFoundException;
 import com.codesingh.readitlaterapp.model.Article;
 import com.codesingh.readitlaterapp.model.User;
 import com.codesingh.readitlaterapp.model.UserArticleMap;
-import com.codesingh.readitlaterapp.payload.ArticleDetailResponse;
-import com.codesingh.readitlaterapp.payload.ArticleResponse;
-import com.codesingh.readitlaterapp.payload.PagedResponse;
-import com.codesingh.readitlaterapp.payload.SaveArticleRequest;
+import com.codesingh.readitlaterapp.payload.*;
 import com.codesingh.readitlaterapp.repository.ArticleRepository;
 import com.codesingh.readitlaterapp.repository.UserArticleMapRepository;
 import com.codesingh.readitlaterapp.repository.UserRepository;
@@ -25,11 +22,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ArticleService {
@@ -44,6 +43,9 @@ public class ArticleService {
 
   @Autowired
   private UserRepository userRepository;
+
+  @Autowired
+  private ArticleMetaDataService articleMetaDataService;
 
   public PagedResponse<ArticleResponse> getAllArticles(int page, int size){
 
@@ -75,7 +77,7 @@ public class ArticleService {
     }
   }
 
-  public PagedResponse<ArticleDetailResponse> getAllUserArticles(String username, UserPrincipal currentUser, int page, int size) {
+  public PagedResponse<ArticleMetaResponse> getAllUserArticles(String username, UserPrincipal currentUser, int page, int size) {
 
     List<ArticleDetailResponse> articleResponsesFilter = new ArrayList<>();
 
@@ -102,7 +104,18 @@ public class ArticleService {
       }
     }
 
-    return new PagedResponse<>(articleResponsesFilter, articleMaps.getNumber(),
+    List<ArticleMetaResponse> articleMetaResponses = articleResponses.stream().map(
+      articleResponse -> {
+        try {
+          return articleMetaDataService.getArticleMetaData(articleResponse);
+        } catch (IOException e) {
+          e.printStackTrace();
+          return new ArticleMetaResponse();
+        }
+      }
+    ).collect(Collectors.toList());
+
+    return new PagedResponse<>(articleMetaResponses, articleMaps.getNumber(),
       articleMaps.getSize(),articleMaps.getNumberOfElements(),articleMaps.getTotalPages(),articleMaps.isLast());
 
   }

@@ -50,8 +50,6 @@ public class MetaDataController {
     articleMetaResponse.setDescription(description);
     articleMetaResponse.setImage(image);
     articleMetaResponse.setTitle(title);
-    articleMetaResponse.setId(Long.parseLong("1"));
-    articleMetaResponse.setUrl(url);
 
     return articleMetaResponse;
   }
