@@ -102,7 +102,6 @@ public class UserController {
     User user = userRepository.findByUsername(username)
       .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
-
     UserProfile userProfile = new UserProfile(user.getId(), user.getUsername(), user.getName());
 
     return userProfile;
