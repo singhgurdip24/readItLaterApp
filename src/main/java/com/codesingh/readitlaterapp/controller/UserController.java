@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 
 @RestController
@@ -46,7 +47,7 @@ public class UserController {
   public ResponseEntity<?> postUserArticle(
     @Valid @RequestBody SaveArticleRequest saveArticleRequest,
     @CurrentUser UserPrincipal currentUser
-  ) {
+  ) throws IOException {
     logger.info("here");
     Article article = articleService.saveArticleByUser(saveArticleRequest, currentUser);
 

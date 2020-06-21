@@ -13,6 +13,10 @@ import com.codesingh.readitlaterapp.repository.UserRepository;
 import com.codesingh.readitlaterapp.security.UserPrincipal;
 import com.codesingh.readitlaterapp.util.AppConstants;
 import com.codesingh.readitlaterapp.util.ModelMapper;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +124,7 @@ public class ArticleService {
 
   }
 
-  public Article saveArticleByUser(SaveArticleRequest saveArticleRequest, UserPrincipal currentUser) {
+  public Article saveArticleByUser(SaveArticleRequest saveArticleRequest, UserPrincipal currentUser) throws IOException {
     Article article = new Article();
     article.setUrl(saveArticleRequest.getArticleUrl());
     article.setAuthor(saveArticleRequest.getAuthor());
@@ -130,6 +134,34 @@ public class ArticleService {
     article.setCreatedAt(now);
     article.setUpdatedAt(now);
 
+    Document doc = Jsoup.connect(saveArticleRequest.getArticleUrl()).get();
+
+    Elements metaTags = doc.getElementsByTag("meta");
+
+    String title = "" ;
+    String image = "";
+    String description = "";
+    String author = "";
+
+    for (Element metaTag : metaTags) {
+      if(metaTag.attr("property").equals("og:image")){
+        image = metaTag.attr("content").toString();
+      }
+      if(metaTag.attr("property").equals("og:description")){
+        description = metaTag.attr("content").toString();
+      }
+      if(metaTag.attr("name").equals("author")){
+        author = metaTag.attr("content").toString();
+      }
+      if(metaTag.attr("property").equals("og:title")){
+        title = metaTag.attr("content").toString();
+      }
+    }
+
+    System.out.println("image" + image);
+    System.out.println("description" + description);
+    System.out.println("author" + author);
+    System.out.println("title" + title);
 
     articleRepository.save(article);
 
