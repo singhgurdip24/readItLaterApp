@@ -31,6 +31,8 @@ public class ModelMapper {
     articleDetailResponse.setArticleRead(userArticleMap.getArticleRead());
     articleDetailResponse.setFavourite(userArticleMap.getFavourite());
     articleDetailResponse.setUpdatedAt(userArticleMap.getUpdatedAt());
+    articleDetailResponse.setImageUrl(userArticleMap.getArticle().getImageUrl());
+    articleDetailResponse.setTitle(userArticleMap.getArticle().getTitle());
 
     return articleDetailResponse;
   }
