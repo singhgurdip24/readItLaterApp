@@ -12,7 +12,7 @@ import java.util.Set;
     "url"
   })
 })
-public class Article extends DateAudit {
+public class Article {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,19 +25,14 @@ public class Article extends DateAudit {
 
   public String author;
 
-  public String type;
+  public String imageUrl;
+
+  public String title;
 
   @OneToMany(mappedBy = "article")
   Set<UserArticleMap> userArticleMapSet;
 
   public Article() {
-  }
-
-  public Article(String url, String description, String author, String type) {
-    this.url = url;
-    this.description = description;
-    this.author = author;
-    this.type = type;
   }
 
   public Long getId() {
@@ -72,11 +67,27 @@ public class Article extends DateAudit {
     this.author = author;
   }
 
-  public String getType() {
-    return type;
+  public Set<UserArticleMap> getUserArticleMapSet() {
+    return userArticleMapSet;
   }
 
-  public void setType(String type) {
-    this.type = type;
+  public void setUserArticleMapSet(Set<UserArticleMap> userArticleMapSet) {
+    this.userArticleMapSet = userArticleMapSet;
+  }
+
+  public String getImageUrl() {
+    return imageUrl;
+  }
+
+  public void setImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 }

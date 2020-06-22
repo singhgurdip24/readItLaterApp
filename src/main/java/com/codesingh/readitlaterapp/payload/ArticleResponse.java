@@ -1,32 +1,18 @@
 package com.codesingh.readitlaterapp.payload;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import java.time.Instant;
-
 public class ArticleResponse {
 
   private Long id;
 
   private String url;
 
+  private String imageUrl;
+
   private String description;
 
-  private Instant createdAt;
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
   private String author;
 
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private String type;
-
-  public Instant getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(Instant createdAt) {
-    this.createdAt = createdAt;
-  }
+  private String title;
 
   public Long getId() {
     return id;
@@ -42,6 +28,14 @@ public class ArticleResponse {
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  public String getImageUrl() {
+    return imageUrl;
+  }
+
+  public void setImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
   }
 
   public String getDescription() {
@@ -60,11 +54,11 @@ public class ArticleResponse {
     this.author = author;
   }
 
-  public String getType() {
-    return type;
+  public String getTitle() {
+    return title;
   }
 
-  public void setType(String type) {
-    this.type = type;
+  public void setTitle(String title) {
+    this.title = title;
   }
 }

@@ -13,10 +13,6 @@ import com.codesingh.readitlaterapp.repository.UserRepository;
 import com.codesingh.readitlaterapp.security.UserPrincipal;
 import com.codesingh.readitlaterapp.util.AppConstants;
 import com.codesingh.readitlaterapp.util.ModelMapper;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class ArticleService {
@@ -81,7 +73,7 @@ public class ArticleService {
     }
   }
 
-  public PagedResponse<ArticleMetaResponse> getAllUserArticles(String username, UserPrincipal currentUser, int page, int size) {
+  public PagedResponse<ArticleDetailResponse> getAllUserArticles(String username, UserPrincipal currentUser, int page, int size) {
 
     List<ArticleDetailResponse> articleResponsesFilter = new ArrayList<>();
 
@@ -98,72 +90,34 @@ public class ArticleService {
         articleMaps.getSize(), articleMaps.getTotalElements(), articleMaps.getTotalPages(), articleMaps.isLast());
     }
 
+//    List<ArticleDetailResponse> articleResponses = articleMaps
+//      .map(ModelMapper::mapArticleMapToArticleDetailResponse)
+//      .getContent();
+
     List<ArticleDetailResponse> articleResponses = articleMaps
-      .map(ModelMapper::mapArticleMapToArticleDetailResponse)
-      .getContent();
+      .filter(articleMap -> articleMap.getDeleted() != Boolean.TRUE)
+      .map(ModelMapper::mapArticleMapToArticleDetailResponse).toList();
 
-    for (ArticleDetailResponse articleResponse: articleResponses) {
-      if (articleResponse.getDeletedAt() == null) {
-        articleResponsesFilter.add(articleResponse);
-      }
-    }
-
-    List<ArticleMetaResponse> articleMetaResponses = articleResponses.stream().map(
-      articleResponse -> {
-        try {
-          return articleMetaDataService.getArticleMetaData(articleResponse);
-        } catch (IOException e) {
-          e.printStackTrace();
-          return new ArticleMetaResponse();
-        }
-      }
-    ).collect(Collectors.toList());
-
-    return new PagedResponse<>(articleMetaResponses, articleMaps.getNumber(),
+    return new PagedResponse<>(articleResponses, articleMaps.getNumber(),
       articleMaps.getSize(),articleMaps.getNumberOfElements(),articleMaps.getTotalPages(),articleMaps.isLast());
 
   }
 
   public Article saveArticleByUser(SaveArticleRequest saveArticleRequest, UserPrincipal currentUser) throws IOException {
+
+    HashMap<String,String > articleMetaMap = articleMetaDataService.getArticleMetaData(saveArticleRequest);
+
     Article article = new Article();
+
     article.setUrl(saveArticleRequest.getArticleUrl());
-    article.setAuthor(saveArticleRequest.getAuthor());
-    article.setDescription(saveArticleRequest.getDescription());
-    article.setType(saveArticleRequest.getType());
-    Instant now = Instant.now();
-    article.setCreatedAt(now);
-    article.setUpdatedAt(now);
-
-    Document doc = Jsoup.connect(saveArticleRequest.getArticleUrl()).get();
-
-    Elements metaTags = doc.getElementsByTag("meta");
-
-    String title = "" ;
-    String image = "";
-    String description = "";
-    String author = "";
-
-    for (Element metaTag : metaTags) {
-      if(metaTag.attr("property").equals("og:image")){
-        image = metaTag.attr("content").toString();
-      }
-      if(metaTag.attr("property").equals("og:description")){
-        description = metaTag.attr("content").toString();
-      }
-      if(metaTag.attr("name").equals("author")){
-        author = metaTag.attr("content").toString();
-      }
-      if(metaTag.attr("property").equals("og:title")){
-        title = metaTag.attr("content").toString();
-      }
-    }
-
-    System.out.println("image" + image);
-    System.out.println("description" + description);
-    System.out.println("author" + author);
-    System.out.println("title" + title);
+    article.setDescription(articleMetaMap.get("description"));
+    article.setAuthor(articleMetaMap.get("author"));
+    article.setImageUrl(articleMetaMap.get("image"));
+    article.setTitle(articleMetaMap.get("title"));
 
     articleRepository.save(article);
+
+    Instant now = Instant.now();
 
     if(currentUser != null) {
       User user = userRepository.findByUsername(currentUser.getUsername())
@@ -171,10 +125,11 @@ public class ArticleService {
 
       UserArticleMap userArticleMap = new UserArticleMap();
       userArticleMap.setArticle(article);
-      userArticleMap.setCreatedDate(now);
-      userArticleMap.setRead(saveArticleRequest.getMarkAsRead());
-      userArticleMap.setFavourite(saveArticleRequest.getMarkAsFavourite());
+      userArticleMap.setCreatedAt(now);
+      userArticleMap.setArticleRead(Boolean.FALSE);
+      userArticleMap.setFavourite(Boolean.TRUE);
       userArticleMap.setUser(user);
+      userArticleMap.setUpdatedAt(now);
 
       userArticleMapRepository.save(userArticleMap);
     }

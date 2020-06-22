@@ -14,8 +14,8 @@ public class ModelMapper {
     articleResponse.setUrl(article.getUrl());
     articleResponse.setDescription(article.getDescription());
     articleResponse.setAuthor(article.getAuthor());
-    articleResponse.setType(article.getType());
-    articleResponse.setCreatedAt(article.getCreatedAt());
+    articleResponse.setImageUrl(article.getImageUrl());
+    articleResponse.setTitle(article.getTitle());
 
     return articleResponse;
   }
@@ -23,17 +23,14 @@ public class ModelMapper {
   public static ArticleDetailResponse mapArticleMapToArticleDetailResponse(UserArticleMap userArticleMap){
 
     ArticleDetailResponse articleDetailResponse = new ArticleDetailResponse();
-    articleDetailResponse.setId(userArticleMap.getMap_id());
-    articleDetailResponse.setUrl(userArticleMap.getArticle().getUrl());
+    articleDetailResponse.setId(userArticleMap.getMapId());
+    articleDetailResponse.setArticleUrl(userArticleMap.getArticle().getUrl());
     articleDetailResponse.setDescription(userArticleMap.getArticle().getDescription());
     articleDetailResponse.setAuthor(userArticleMap.getArticle().getAuthor());
-    articleDetailResponse.setType(userArticleMap.getArticle().getType());
-    articleDetailResponse.setCreatedAt(userArticleMap.getArticle().getCreatedAt());
-    articleDetailResponse.setArticleRead(userArticleMap.getRead());
-    articleDetailResponse.setArticleRead(userArticleMap.getFavourite());
-    articleDetailResponse.setSavedAt(userArticleMap.getCreatedDate());
-    articleDetailResponse.setLastModifiedAt(userArticleMap.getLastModifiedDate());
-    articleDetailResponse.setDeletedAt(userArticleMap.getDeletedAt());
+    articleDetailResponse.setSavedAt(userArticleMap.getCreatedAt());
+    articleDetailResponse.setArticleRead(userArticleMap.getArticleRead());
+    articleDetailResponse.setFavourite(userArticleMap.getFavourite());
+    articleDetailResponse.setUpdatedAt(userArticleMap.getUpdatedAt());
 
     return articleDetailResponse;
   }

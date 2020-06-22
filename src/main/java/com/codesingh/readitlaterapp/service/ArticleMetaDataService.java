@@ -1,7 +1,6 @@
 package com.codesingh.readitlaterapp.service;
 
-import com.codesingh.readitlaterapp.payload.ArticleDetailResponse;
-import com.codesingh.readitlaterapp.payload.ArticleMetaResponse;
+import com.codesingh.readitlaterapp.payload.SaveArticleRequest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,6 +8,7 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 @Service
 public class ArticleMetaDataService {
@@ -16,8 +16,9 @@ public class ArticleMetaDataService {
   public ArticleMetaDataService() {
   }
 
-  public ArticleMetaResponse getArticleMetaData(ArticleDetailResponse articleDetailResponse) throws IOException {
-    Document doc = Jsoup.connect(articleDetailResponse.getUrl()).get();
+  public HashMap<String,String> getArticleMetaData(SaveArticleRequest saveArticleRequest) throws IOException {
+
+    Document doc = Jsoup.connect(saveArticleRequest.getArticleUrl()).get();
 
     Elements metaTags = doc.getElementsByTag("meta");
 
@@ -41,21 +42,12 @@ public class ArticleMetaDataService {
       }
     }
 
-    ArticleMetaResponse articleMetaResponse = new ArticleMetaResponse();
-    articleMetaResponse.setMetaAuthor(author);
-    articleMetaResponse.setMetaDescription(description);
-    articleMetaResponse.setImage(image);
-    articleMetaResponse.setTitle(title);
+    HashMap<String, String> metaMap = new HashMap<>();
+    metaMap.put("image",image);
+    metaMap.put("description", description);
+    metaMap.put("title", title);
+    metaMap.put("author",author);
 
-    articleMetaResponse.setUrl(articleDetailResponse.getUrl());
-    articleMetaResponse.setId(articleDetailResponse.getId());
-    articleMetaResponse.setCreatedAt(articleDetailResponse.getCreatedAt());
-    articleMetaResponse.setType(articleDetailResponse.getType());
-    articleMetaResponse.setArticleRead(articleDetailResponse.getArticleRead());
-    articleMetaResponse.setFavourite(articleDetailResponse.getFavourite());
-    articleMetaResponse.setLastModifiedAt(articleDetailResponse.getLastModifiedAt());
-    articleMetaResponse.setSavedAt(articleDetailResponse.getSavedAt());
-
-    return articleMetaResponse;
+    return metaMap;
   }
 }

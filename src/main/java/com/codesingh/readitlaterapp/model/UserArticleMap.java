@@ -1,5 +1,6 @@
 package com.codesingh.readitlaterapp.model;
 
+import com.codesingh.readitlaterapp.model.audit.DateAudit;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -8,7 +9,7 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "user_article_map")
-public class UserArticleMap {
+public class UserArticleMap extends DateAudit {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,22 +24,6 @@ public class UserArticleMap {
   @JoinColumn(name = "article_id")
   private Article article;
 
-  @CreatedDate
-  @Column(name = "created_date")
-  private Instant createdDate;
-
-  public Instant getDeletedAt() {
-    return deletedAt;
-  }
-
-  public void setDeletedAt(Instant deletedAt) {
-    this.deletedAt = deletedAt;
-  }
-
-  @LastModifiedDate
-  @Column(name = "last_modified_date")
-  private Instant lastModifiedDate;
-
   @Column(name = "deleted_at")
   private Instant deletedAt;
 
@@ -46,25 +31,17 @@ public class UserArticleMap {
 
   private Boolean favourite;
 
+  private Boolean isDeleted;
+
   public UserArticleMap() {
   }
 
-  public UserArticleMap(Long mapId, User user, Article article, Instant createdDate, Instant lastModifiedDate, Boolean articleRead, Boolean favourite) {
-    this.mapId = mapId;
-    this.user = user;
-    this.article = article;
-    this.createdDate = createdDate;
-    this.lastModifiedDate = lastModifiedDate;
-    this.articleRead = articleRead;
-    this.favourite = favourite;
-  }
-
-  public Long getMap_id() {
+  public Long getMapId() {
     return mapId;
   }
 
-  public void setMap_id(Long map_id) {
-    this.mapId = map_id;
+  public void setMapId(Long mapId) {
+    this.mapId = mapId;
   }
 
   public User getUser() {
@@ -83,27 +60,19 @@ public class UserArticleMap {
     this.article = article;
   }
 
-  public Instant getCreatedDate() {
-    return createdDate;
+  public Instant getDeletedAt() {
+    return deletedAt;
   }
 
-  public void setCreatedDate(Instant createdDate) {
-    this.createdDate = createdDate;
+  public void setDeletedAt(Instant deletedAt) {
+    this.deletedAt = deletedAt;
   }
 
-  public Instant getLastModifiedDate() {
-    return lastModifiedDate;
-  }
-
-  public void setLastModifiedDate(Instant lastModifiedDate) {
-    this.lastModifiedDate = lastModifiedDate;
-  }
-
-  public Boolean getRead() {
+  public Boolean getArticleRead() {
     return articleRead;
   }
 
-  public void setRead(Boolean articleRead) {
+  public void setArticleRead(Boolean articleRead) {
     this.articleRead = articleRead;
   }
 
@@ -113,5 +82,13 @@ public class UserArticleMap {
 
   public void setFavourite(Boolean favourite) {
     this.favourite = favourite;
+  }
+
+  public Boolean getDeleted() {
+    return isDeleted;
+  }
+
+  public void setDeleted(Boolean deleted) {
+    isDeleted = deleted;
   }
 }
