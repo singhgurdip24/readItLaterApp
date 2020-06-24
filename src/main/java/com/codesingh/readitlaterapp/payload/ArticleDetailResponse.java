@@ -16,8 +16,6 @@ public class ArticleDetailResponse {
 
   public String imageUrl;
 
-  public String type;
-
   public Instant savedAt;
 
   public Instant updatedAt;
@@ -72,14 +70,6 @@ public class ArticleDetailResponse {
 
   public void setImageUrl(String imageUrl) {
     this.imageUrl = imageUrl;
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
   }
 
   public Instant getSavedAt() {

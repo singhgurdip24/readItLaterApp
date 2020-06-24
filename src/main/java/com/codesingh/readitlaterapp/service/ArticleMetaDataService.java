@@ -32,7 +32,7 @@ public class ArticleMetaDataService {
         image = metaTag.attr("content").toString();
       }
       if(metaTag.attr("property").equals("og:description")){
-        description = metaTag.attr("content").toString();
+        description = metaTag.attr("content").toString().substring(0,150);
       }
       if(metaTag.attr("name").equals("author")){
         author = metaTag.attr("content").toString();

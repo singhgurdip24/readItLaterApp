@@ -90,10 +90,6 @@ public class ArticleService {
         articleMaps.getSize(), articleMaps.getTotalElements(), articleMaps.getTotalPages(), articleMaps.isLast());
     }
 
-//    List<ArticleDetailResponse> articleResponses = articleMaps
-//      .map(ModelMapper::mapArticleMapToArticleDetailResponse)
-//      .getContent();
-
     List<ArticleDetailResponse> articleResponses = articleMaps
       .filter(articleMap -> articleMap.getDeleted() != Boolean.TRUE)
       .map(ModelMapper::mapArticleMapToArticleDetailResponse).toList();
